@@ -1,0 +1,301 @@
+/* Temperature graph overlay for flex layout */
+.temp-simple-line {
+  display: block;
+  margin: 8px 0;
+}
+/* FLEX HOURLY CHARTS */
+.hourly-flex-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  width: 100%;
+  margin-bottom: 8px;
+}
+
+/* Make each child of an hourly row take equal space so columns align */
+.hourly-flex-row > * {
+  flex: 1 0 0; /* equal-width columns, don't grow based on content */
+  min-width: 0; /* allow children to shrink to fit the column */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center; /* default center; specific rows override as needed */
+}
+
+/* For the wind row, display number and unit inline instead of stacked */
+.hourly-flex-row.wind-values > .wind-value {
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+.wind-value small {
+  margin-left: 6px;
+  font-size: 13px;
+  color: #cbd5e1;
+}
+
+.wind-arrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #cbd5e1;
+  font-size: 12px;
+  transform-origin: center center;
+}
+.wind-speed { font-weight: 700; color: #cbd5e1; margin-right: 6px; }
+.wind-unit { color: #9fb0c6; margin-right: 4px; font-size: 13px; }
+
+/* Row containing arrow icons below wind values */
+.hourly-flex-row.wind-arrows {
+  margin-top: 4px;
+  margin-bottom: 6px;
+}
+.wind-arrow-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.wind-arrow svg { color: #9fb0c6; width: 14px; height: 14px; }
+.temp-values {
+  margin-bottom: 8px;
+}
+.temp-value {
+  font-size: 20px;
+  font-weight: bold;
+  color: #facc15;
+  text-align: center;
+}
+.hour-label {
+  font-size: 14px;
+  color: #cbd5e1;
+  text-align: center;
+  margin-top: 6px;
+}
+.precip-bars {
+  height: 100px;
+  margin-bottom: 8px;
+}
+
+/* Ensure precip bar wrappers align their bars to the bottom of the cell */
+.precip-bars > .precip-bar-wrapper {
+  justify-content: flex-end;
+}
+.precip-bar-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+}
+.precip-bar {
+  width: 10px;
+  background: #38bdf8;
+  border-radius: 8px;
+  margin-bottom: 6px; /* space between bar and label */
+  box-shadow: 0 2px 8px 0 rgba(56,189,248,0.12);
+  transition: height 0.3s;
+}
+
+.precip-bar.precip-zero {
+  border-radius: 4px;
+  box-shadow: none;
+  opacity: 0.95;
+}
+.precip-label {
+  font-size: 13px;
+  color: #38bdf8;
+  font-weight: 700;
+  margin-top: 2px; /* sits below the bar */
+}
+
+/* New row for precipitation percent values (below bars) */
+.precip-values {
+  margin-bottom: 6px;
+}
+.precip-value {
+  font-size: 13px;
+  color: #38bdf8;
+  font-weight: 700;
+  text-align: center;
+}
+.header-icon-temp-metrics {
+  display: flex;
+  align-items: flex-start;
+  gap: 32px;
+}
+.header-metrics-vertical {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 6px;
+}
+.header-metric {
+  font-size: 18px;
+  color: #cbd5e1;
+  font-weight: 500;
+}
+/* HEADER REDESIGN */
+.header-redesign {
+  margin-bottom: 18px;
+}
+.header-main-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+.big-weather-icon {
+  font-size: 64px;
+}
+.big-temperature {
+  font-size: 64px;
+  font-weight: 700;
+  color: #facc15;
+  letter-spacing: -2px;
+}
+.feels-like-temperature {
+  font-size: 18px;
+  color: #cbd5e1;
+  font-weight: 500;
+}
+.header-daytime {
+  text-align: right;
+}
+.header-title {
+  font-size: 22px;
+  font-weight: 600;
+  color: #fff;
+}
+.header-location {
+  font-size: 22px;
+  font-weight: 600;
+  color: #facc15;
+}
+.header-location-input {
+  font-size: 18px;
+  font-weight: 500;
+  color: #facc15;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid #facc1566;
+  outline: none;
+  text-align: right;
+  width: 100%;
+  padding: 2px 0;
+}
+.header-location-input::placeholder {
+  color: #94a3b8;
+  font-weight: 400;
+}
+.header-day {
+  font-size: 22px;
+  font-weight: 600;
+  color: #facc15;
+}
+.header-time {
+  font-size: 18px;
+  color: #facc15;
+  font-weight: 500;
+}
+.header-weather-description {
+  font-size: 18px;
+  color: #cbd5e1;
+  font-weight: 500;
+}
+
+
+body {
+  margin: 0;
+  background: #0f172a;
+  font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+  color: #fff;
+}
+
+.app-root {
+  padding: 40px;
+}
+
+.weather-card {
+  width: 700px;
+  background: #1e293b;
+  border-radius: 24px;
+  padding: 32px 32px 24px 32px;
+  color: white;
+  box-shadow: 0 4px 24px 0 rgba(0,0,0,0.18);
+}
+/* Google Auth */
+/* Sign-in page styles */
+.signin-card {
+  background: #0b1220;
+  border-radius: 20px;
+  padding: 28px;
+  box-shadow: 0 8px 32px rgba(2,6,23,0.6);
+}
+.gsi-wrapper {
+  background: linear-gradient(180deg, #111827, #0f172a);
+  border-radius: 12px;
+  padding: 18px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Make the GSI default button blend a little better */
+#gbtn > div { display: inline-block; }
+#gbtn iframe, #gbtn div[role="button"] { border-radius: 8px !important; }
+#gbtn div[role="button"] { padding: 10px 18px !important; font-weight: 600 !important; }
+/* TABS */
+
+.tabs {
+  display: flex;
+  gap: 32px;
+  margin-top: 24px;
+  border-bottom: 1px solid #334155;
+}
+
+.tab {
+  cursor: pointer;
+  padding-bottom: 10px;
+  opacity: 0.7;
+  font-size: 17px;
+  font-weight: 500;
+}
+
+.tab.active {
+  opacity: 1;
+  border-bottom: 3px solid #facc15;
+}
+
+/* HOURLY */
+
+.hourly {
+  margin-top: 28px;
+}
+
+svg {
+  width: 100%;
+}
+
+
+/* DAILY */
+
+.daily {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 14px;
+  margin-top: 32px;
+}
+
+.day {
+  background: #334155;
+  padding: 14px 0 10px 0;
+  border-radius: 14px;
+  text-align: center;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.day.active {
+  background: #facc15;
+  color: #1e293b;
+  font-weight: 600;
+}

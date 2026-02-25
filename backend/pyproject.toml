@@ -1,0 +1,29 @@
+[project]
+name = "signal-deck-backend"
+version = "0.1.0"
+description = "Backend to the Signal Deck service"
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.13"
+dependencies = [
+    "fastapi[standard]>=0.129.0",
+    "google-auth>=2.48.0",
+    "google-auth-httplib2>=0.3.0",
+    "google-auth-oauthlib>=1.2.4",
+    "httpx>=0.28.1",
+    "itsdangerous>=2.2.0",
+    "python-dotenv>=1.2.1",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.uv]
+package = true
+
+[tool.hatch.build.targets.wheel]
+packages = ["."]
+
+[tool.bandit]
+exclude_dirs = [".venv"]
