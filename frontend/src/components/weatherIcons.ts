@@ -1,5 +1,5 @@
-﻿export function getWeatherIcon(code: number, isDay: number): string | [string, string] {
-  const iconMap: Record<number, string | [string, string]> = {
+﻿export function getWeatherIcon(code: number, isDay: number): string {
+  const iconMap: Record<number, string> = {
     0: isDay ? "☀️" : "🌙",
     1: isDay ? "🌤️" : "🌙",
     2: isDay ? "⛅" : "☁️",
@@ -33,7 +33,7 @@
   return iconMap[code] ?? "❓";
 }
 
-export function getWeatherDescription(code: number) {
+export function getWeatherDescription(code: number): string {
   if (code === 0) return "Sunny";
   if (code < 3) return "Partly Cloudy";
   if (code < 60) return "Cloudy";

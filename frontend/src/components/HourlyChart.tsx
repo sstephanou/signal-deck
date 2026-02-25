@@ -10,6 +10,7 @@ interface Props {
 export default function HourlyChart({ activeTab, selectedDayIndex, hourlyData, dailyData }: Props) {
   // 1. Find the date string for the selected day (e.g., "2026-02-15")
   const selectedDate = dailyData[selectedDayIndex]?.time;
+  if (!selectedDate) return null;
 
   // 2. Filter hourly data for that day (expect up to 24 points)
   const fullDay = hourlyData.filter((item) => item.time.startsWith(selectedDate));
@@ -68,20 +69,18 @@ export default function HourlyChart({ activeTab, selectedDayIndex, hourlyData, d
   // Determine whether to show labels/values for a given index: show every 3 positions
   const shouldShowLabel = (_timeStr: string, idx: number) => idx % 3 === 0;
 
-  const values = displayData.map((d) => d[activeTab]);
-  const max = Math.max(...values);
-  const min = Math.min(...values);
-
-  // Add small padding to temp range so tiny variations don't create large vertical swings
-  const padding = Math.max(2, (max - min) * 0.2);
-  const tempMin = min - padding;
-  const tempMax = max + padding;
-  const verticalSpan = 50; // controls how tall the temperature area is
-
   return (
     <div className="hourly">
-      {activeTab === "temperature" && (
-        <>
+      {activeTab === "temperature" && (() => {
+        const values = displayData.map((d) => d.temperature);
+        const max = Math.max(...values);
+        const min = Math.min(...values);
+        // Add small padding to temp range so tiny variations don't create large vertical swings
+        const padding = Math.max(2, (max - min) * 0.2);
+        const tempMin = min - padding;
+        const tempMax = max + padding;
+        const verticalSpan = 50; // controls how tall the temperature area is
+        return (<>
           <svg className="temp-simple-line" width="100%" height="80" viewBox="0 0 100 80" preserveAspectRatio="none">
             <polygon
               fill="rgba(250,204,21,0.18)"
@@ -108,8 +107,8 @@ export default function HourlyChart({ activeTab, selectedDayIndex, hourlyData, d
               </div>
             ))}
           </div>
-        </>
-      )}
+        </>);
+      })()}
 
       {activeTab === "precipitation" && (
         <>
@@ -141,7 +140,7 @@ export default function HourlyChart({ activeTab, selectedDayIndex, hourlyData, d
                 {shouldShowLabel(d.time, i) ? (
                   <>
                     <span className="wind-speed">{d.wind.toFixed(0)}</span>
-                    <span className="wind-unit">mph</span>
+                    <span className="wind-unit">km/h</span>
                   </>
                 ) : ""}
               </div>

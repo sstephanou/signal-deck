@@ -1,4 +1,4 @@
-﻿# signal-deck
+# signal-deck
 
 A personal intelligence dashboard aggregating real-time data, alerts, and monitoring signals.
 

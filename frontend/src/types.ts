@@ -1,4 +1,4 @@
-﻿export interface User {
+export interface User {
   name?: string;
   email?: string;
   picture?: string;
@@ -16,11 +16,11 @@ export type Location = string;
 
 export type CurrentWeather = {
   weather_code: number;
-  temperature: number;
-  apparent_temperature: number;
-  precipitation: number;
-  humidity: number;
-  wind: number;
+  temperature: number | "--";
+  apparent_temperature: number | "--";
+  precipitation: number | "--";
+  humidity: number | "--";
+  wind: number | "--";
   current_day: string;
   current_time: string;
   is_day: number;
@@ -42,7 +42,6 @@ export type DailyWeatherEntry = {
   weather_code: number;
   temperature_max: number;
   temperature_min: number;
-  precipitation_sum: number;
 };
 
 export type DailyWeather = DailyWeatherEntry[];

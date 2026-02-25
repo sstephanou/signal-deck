@@ -5,24 +5,31 @@ import logging
 
 router = APIRouter()
 
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(levelname)s: WEATHER-API %(asctime)s %(message)s",
-)
+logger = logging.getLogger(__name__)
+
+
+def _safe_get(value):
+    return value if value is not None else "--"
+
+
+def _safe_round(value):
+    return round(value) if value is not None else "--"
 
 
 # e.g. http://127.0.0.1:8000/weather/data?location=__LOCATION__
 # fix type of output of function
 @router.get("/data")
-async def get_weather_current(location: str) -> dict:
+async def get_weather_dashboard(location: str) -> dict:
     """
-    Returns current weather information for a location.
+    Returns weather information (current, hourly, and daily)
+    for a location.
 
     Args:
-        location (str): The locataion whose geocode we need .
+        location (str): The location whose geocode we need.
 
     Returns:
-        dict: JSON object of current weather information for a specific location.
+        dict: JSON object containing current, hourly, and daily
+        weather information for a specific location.
     """
     try:
         location_results = await get_geocode_from_location(
@@ -43,11 +50,14 @@ async def get_weather_current(location: str) -> dict:
         return {
             "current": {
                 "weather_code": current.get("weather_code"),
-                "temperature": round(current.get("temperature_2m")),
-                "apparent_temperature": round(current.get("apparent_temperature")),
-                "precipitation": current.get("precipitation"),
-                "humidity": current.get("relative_humidity_2m"),
-                "wind": round(current.get("wind_speed_10m")),
+                "temperature": _safe_round(current.get("temperature_2m")),
+                "apparent_temperature": _safe_round(
+                    current.get("apparent_temperature")
+                ),
+                "precipitation": _safe_get(current.get("precipitation")),
+                "humidity": _safe_get(current.get("relative_humidity_2m")),
+                "wind": _safe_round(current.get("wind_speed_10m")),
+                "is_day": current.get("is_day", 1),
                 "current_day": now.strftime("%A"),
                 "current_time": now.strftime("%H:%M"),
             },
@@ -58,5 +68,5 @@ async def get_weather_current(location: str) -> dict:
     except HTTPException:
         raise  # Pass our 404 through
     except Exception as e:
-        logging.error(f"Failed to fetch weather for {location}. Error: {e}")
+        logger.error(f"Failed to fetch weather for {location}. Error: {e}")
         raise HTTPException(status_code=500, detail="Internal Server Error")

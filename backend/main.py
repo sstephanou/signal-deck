@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from routes.weather import router as weather_router
 from fastapi.middleware.cors import CORSMiddleware
+import logging
 
 app = FastAPI()
 
@@ -16,6 +17,11 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["GET", "POST", "OPTIONS"],
     allow_headers=["*"],
+)
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(levelname)s: %(name)s %(asctime)s %(message)s",
 )
 
 

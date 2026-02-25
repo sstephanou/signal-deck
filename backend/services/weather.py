@@ -1,25 +1,41 @@
-﻿import pandas as pd
 import httpx
 import logging
 
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(levelname)s: WEATHER-MONITOR %(asctime)s %(message)s",
-)
-logging.getLogger("httpx").setLevel(logging.WARNING)
+logger = logging.getLogger(__name__)
+
+HOURLY_FIELD_RENAMES = {
+    "temperature_2m": "temperature",
+    "precipitation_probability": "precipitation",
+    "wind_speed_10m": "wind",
+}
+
+DAILY_FIELD_RENAMES = {
+    "temperature_2m_max": "temperature_max",
+    "temperature_2m_min": "temperature_min",
+}
+
+
+def _rename_keys(data: dict, mapping: dict) -> dict:
+    """Return a copy of data with keys renamed according to mapping.
+    Keys not in mapping are kept as-is.
+    """
+    return {mapping.get(k, k): v for k, v in data.items()}
 
 
 async def get_geocode_from_location(
-    location: str, page_count: str = "10", language: str = "en", format: str = "json"
+    location: str,
+    page_count: str = "10",
+    language: str = "en",
+    response_format: str = "json",
 ) -> list:
     """
     Returns geocode from a location.
 
     Args:
-        location (str): The locataion whose geocode we need .
+        location (str): The location whose geocode we need.
         page_count (str): Number of results to return.
         language (str): Language of the results.
-        format (str): Format of the results.
+        response_format (str): Format of the results.
 
     Returns:
         list: List of geolocations.
@@ -29,9 +45,9 @@ async def get_geocode_from_location(
         "name": location,
         "count": page_count,
         "language": language,
-        "format": format,
+        "response_format": response_format,
     }
-    logging.info(f"Searching geocode for: {location}")
+    logger.info(f"Searching geocode for: {location}")
 
     async with httpx.AsyncClient() as client:
         response = await client.get(url, params=params)
@@ -70,7 +86,6 @@ async def get_weather_from_geocode(lat: float = 0, lon: float = 0) -> tuple:
             "is_day",
             "precipitation",
             "rain",
-            "relative_humidity_2m",
             "snowfall",
             "weather_code",
             "wind_speed_10m",
@@ -78,7 +93,7 @@ async def get_weather_from_geocode(lat: float = 0, lon: float = 0) -> tuple:
         "timezone": "auto",
     }
 
-    logging.info(
+    logger.info(
         f"Searching Weather information for latitude: {lat} and longitude: {lon}"
     )
 
@@ -91,38 +106,34 @@ async def get_weather_from_geocode(lat: float = 0, lon: float = 0) -> tuple:
     # expect, e.g. check if not temperature_2m, etc
     current_weather_dict = data_json.get("current", {})
     if not current_weather_dict:
-        logging.error("Weather API: 'current' data is missing or empty.")
+        logger.error("Weather API: 'current' data is missing or empty.")
 
     hourly_json = data_json.get("hourly", {})
-    if hourly_json:
-        hourly_df = pd.DataFrame(hourly_json)
-        hourly_df = hourly_df.rename(
-            columns={
-                "temperature_2m": "temperature",
-                "precipitation_probability": "precipitation",
-                "wind_speed_10m": "wind",
-            }
-        )
-        hourly_df["time"] = hourly_df["time"].astype(str)
-        hourly_weather_list = hourly_df.to_dict(orient="records")
+    if hourly_json and "time" in hourly_json:
+        n_hours = len(hourly_json["time"])
+        hourly_weather_list = [
+            _rename_keys(
+                {col: values[i] for col, values in hourly_json.items()},
+                HOURLY_FIELD_RENAMES,
+            )
+            for i in range(n_hours)
+        ]
     else:
-        logging.error("Weather API: 'hourly' data is missing or empty.")
+        logger.error("Weather API: 'hourly' data is missing or empty.")
         hourly_weather_list = []
 
     daily_json = data_json.get("daily", {})
-    if daily_json:
-        daily_df = pd.DataFrame(daily_json)
-        daily_df = daily_df.rename(
-            columns={
-                "temperature_2m_max": "temperature_max",
-                "temperature_2m_min": "temperature_min",
-                "precipitation_sum": "precipitation_sum",
-            }
-        )
-        daily_df["time"] = daily_df["time"].astype(str)
-        daily_weather_list = daily_df.to_dict(orient="records")
+    if daily_json and "time" in daily_json:
+        n_days = len(daily_json["time"])
+        daily_weather_list = [
+            _rename_keys(
+                {col: values[i] for col, values in daily_json.items()},
+                DAILY_FIELD_RENAMES,
+            )
+            for i in range(n_days)
+        ]
     else:
-        logging.error("Weather API: 'daily' data is missing or empty.")
+        logger.error("Weather API: 'daily' data is missing or empty.")
         daily_weather_list = []
 
     return current_weather_dict, hourly_weather_list, daily_weather_list

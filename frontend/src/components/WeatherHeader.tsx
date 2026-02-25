@@ -1,22 +1,12 @@
-﻿import { useState } from "react";
+﻿import { getWeatherIcon, getWeatherDescription } from "./weatherIcons";
+import type { CurrentWeather, Location } from "../types";
+import React, { useState } from "react";
 
 type Props = {
-  currentWeather: {
-    weather_code: number;
-    temperature: number;
-    apparent_temperature: number,
-    precipitation: number;
-    humidity: number;
-    wind: number;
-    current_day: string;
-    current_time: string;
-    is_day: number;
-  };
-  location?: string;
+  currentWeather: CurrentWeather;
+  location?: Location;
   onSearch: (location: string) => void;
 };
-
-import { getWeatherIcon, getWeatherDescription } from "./weatherIcons";
 
 export default function WeatherHeader({currentWeather, location, onSearch}: Props) {
   const [input, setInput] = useState("");
@@ -52,6 +42,7 @@ export default function WeatherHeader({currentWeather, location, onSearch}: Prop
             value={input}
             onChange={e => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
+            aria-label="City name"
           />
           {location && <div className="header-location">{location}</div>}
           <div className="header-day">{currentWeather.current_day}</div>

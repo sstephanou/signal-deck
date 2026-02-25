@@ -10,7 +10,7 @@ interface Props {
 export default function DailyForecast({ dailyData, selectedDayIndex, onSelectDay }: Props) {
   const getDayName = (dateStr: string, index: number) => {
     if (index === 0) return "Today";
-    const date = new Date(dateStr);
+    const date = new Date(dateStr + "T12:00:00");
     return date.toLocaleDateString("en-US", { weekday: "short" });
   };
 
@@ -21,6 +21,14 @@ export default function DailyForecast({ dailyData, selectedDayIndex, onSelectDay
           key={day.time}
           className={`day ${selectedDayIndex === i ? "active" : ""}`}
           onClick={() => onSelectDay(i)}
+          tabIndex={0}
+          role="button"
+          onKeyDown={e => {
+            if (e.key === "Enter" || e.key === " ") {
+              onSelectDay(i);
+            }
+          }}
+          aria-pressed={selectedDayIndex === i}
         >
           <div className="day-name">{getDayName(day.time, i)}</div>
           <div className="day-icon">{getWeatherIcon(day.weather_code, 1)}</div>
